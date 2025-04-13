@@ -11,6 +11,7 @@
 #include "mpu6050.h"
 
 const int I2C_CHIP_ADDRESS = 0x68;
+const int I2C_CHIP_ADDRESS_BMP280 = 0x76;
 const int I2C_SDA_GPIO = 20;
 const int I2C_SCL_GPIO = 21;
 
@@ -21,9 +22,14 @@ void i2c_task(void *p) {
     gpio_pull_up(I2C_SDA_GPIO);
     gpio_pull_up(I2C_SCL_GPIO);
 
+    uint8_t buffer[6];
+
     // TODO
     // read id chip BMP280
-    // printf("BMP280 ID: 0x%X \n", buffer[0]);
+    uint8_t id_chip_addr = 0xd0;
+    i2c_write_blocking(i2c_default, I2C_CHIP_ADDRESS_BMP280, &id_chip_addr, 1, true); // true to keep master control of bus
+    i2c_read_blocking(i2c_default, I2C_CHIP_ADDRESS_BMP280, buffer, 1, false);
+    printf("BMP280 ID: 0x%X \n", buffer[0]);
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(200));
